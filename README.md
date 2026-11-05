@@ -6,6 +6,8 @@ An [opencode](https://opencode.ai) skill that acts as your lab TA for the **MAFS
 
 The lab trades through the Bitget exchange API (via the `bgc` CLI). Use a DeepSeek model in opencode.
 
+**Accounts:** each group needs only **ONE Bitget account** (registered by the Group Leader or one designated member). It holds the group's 100 USDT, the Demo API key and the Live API key. Other members do not need Bitget accounts. Every student installs opencode + a DeepSeek key + this skill, or the group works on the key holder's machine. Keys stay on that one machine — never share keys in chat.
+
 ## Install with opencode (recommended)
 
 1. Install [opencode](https://opencode.ai/docs/) and connect a DeepSeek model (`/connect` → DeepSeek).

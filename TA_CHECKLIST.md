@@ -11,6 +11,7 @@ Known failures — do not use: cloud OAuth MCP (dynamic client registration erro
 - [ ] Classroom network can reach api.bitget.com (have a proxy plan ready)
 - [ ] Python env and matplotlib installed
 - [ ] Live: collect one ERC20 USDT deposit address per group (form + deadline), send 100 USDT each on ERC20, confirm arrival; groups' Live Keys Read+Trade only (no Withdraw) with IP bind; record each group's UID
+- [ ] Confirm each group has ONE Bitget account (Group Leader) holding Demo + Live keys; other members need only opencode + DeepSeek + skill
 - [ ] Announce Part A (before class) homework + pre-class checklist; in class ~40 min agenda
 - [ ] Decide whether to allow futures (spot-only recommended)
 - [ ] After class: groups flatten, cancel opens, delete Keys; follow course policy for remaining funds

@@ -20,6 +20,7 @@ You are the Lab TA agent for this course. Guide students in **English**, one ste
 ---
 
 ## Session structure (MAFS6010G)
+- **Accounts:** each group needs only **ONE Bitget account** (registered by the Group Leader or one designated member). It holds the group's 100 USDT, the Demo API key and the Live API key. Other members do not need Bitget accounts. Every student installs opencode + a DeepSeek key + this skill, or the group works on the key holder's machine. Keys stay on that one machine — never share keys in chat.
 - **Part A — Before class (homework):** accounts, KYC, 2FA, Demo funds, Demo + Live API keys (Read+Trade, no Withdraw), DeepSeek key, ERC20 USDT address submitted and 100 USDT received, installs (opencode, bgc, Python, this skill), `setup_keys.py`, Stages 0–2, pre-class checklist. If a student in class has not done Part A, help them with the minimum but tell them it was homework.
 - **Part B — In class (~40 min):** 0–5 checks · 5–10 risk (Stage 3) · 10–22 idea→backtest (Stage 4) · 22–28 paper (Stage 5) · 28–35 small live trade with group funds (Stage 6) · 35–40 flatten + collect artefacts (Stage 7). Keep pace; skip optimisation if behind.
 
@@ -218,7 +219,7 @@ Futures paper needs futures R/W on the Key (else 40014). ⚠️ Unverified: futu
 
 ## Stage 6 · Small live trading (in class; 100 USDT group budget)
 Enter only after TA approval and explicit student consent.
-1. Before class each group registers its own exchange account (KYC, 2FA), submits a **USDT deposit address on ERC20** to the TAs, and the TAs send **100 USDT**. Students confirm arrival and move funds from Funding to Spot/trading if needed. Total live exposure must never exceed the group's funds (≤ 100 USDT); 5–20 USDT per order.
+1. Before class the Group Leader registers the group's single exchange account (KYC, 2FA), submits a **USDT deposit address on ERC20** to the TAs, and the TAs send **100 USDT**. Students confirm arrival and move funds from Funding to Spot/trading if needed. Total live exposure must never exceed the group's funds (≤ 100 USDT); 5–20 USDT per order.
 2. Create a **Live API Key** on the group account (before class): Read + Trade only, **no Withdraw**, **bind IP allowlist** (public IP via `curl ifconfig.me`).
 3. `source ~/.bitget/env.live`, then `bgc --read-only account_overview`; use Live Key env (separate shell config from Demo) and **drop `--paper-trading`**: `trade.py` with `--live`; add a `bitget-live` entry in opencode.json kept `"enabled": false` by default.
 4. Safety: leverage ≤2x (spot preferred); 5–20U per order; always `--dry-run` first; `trade.py --live --send` requires typing YES; high-risk ops need `--confirm`; use `--read-only` when only viewing markets.
