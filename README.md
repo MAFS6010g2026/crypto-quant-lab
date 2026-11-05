@@ -1,18 +1,19 @@
-# MAFS6010G Crypto Quant Lab — Option B (Hyperliquid testnet)
+# MAFS6010G Crypto Quant Lab — Hyperliquid testnet
 
 English-only course skill for **MAFS6010G Crypto Finance**.  
-This branch (`hyperliquid`) uses **Hyperliquid TESTNET**: no KYC for students, mock USDC, API/agent wallets.
-
-> Bitget / CEX path remains on branch `main`. Do not mix the two.
+This branch (`hyperliquid`) is the **course Quant Lab path**: **Hyperliquid TESTNET**, no KYC for students, mock USDC, API/agent wallets.
 
 **Repo:** https://github.com/MAFS6010g2026/crypto-quant-lab/tree/hyperliquid
+
+**Address form:** https://forms.gle/7VGu9s6vZFJgRLRFA  
+**Deadline:** Friday, 6 Nov 2026, 23:59 HKT
 
 ## Install with opencode (recommended)
 
 After `opencode` works with DeepSeek, paste this whole prompt:
 
 ```
-You are installing the MAFS6010G Crypto Quant Lab skill (Option B / Hyperliquid testnet).
+You are installing the MAFS6010G Crypto Quant Lab skill (Hyperliquid testnet).
 
 Do the following, then print a checklist table (OK / FAIL):
 1) Ensure git and python3 (>=3.9) exist.
@@ -31,7 +32,7 @@ Do the following, then print a checklist table (OK / FAIL):
    cd ~/lab-hl && source .venv/bin/activate
    python scripts/data.py candles ETH --granularity 1h --start 2026-09-01 | tail -5
 6) NEVER ask for seed phrases, master private keys, or agent keys. Tell the student to run
-   `python scripts/setup_keys.py` themselves in their own terminal after the TAs fund the group.
+   `python scripts/setup_keys.py` themselves in their own terminal after the TAs fund the wallet.
 
 Print versions and pass/fail for each step. Stop after the checklist.
 ```

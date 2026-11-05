@@ -1,13 +1,13 @@
 ---
 name: crypto-quant-lab-hl
-description: Use when students work on the MAFS6010G Crypto Finance quant lab Option B (Hyperliquid TESTNET) — opencode, agent wallets, risk, backtests on public HL candles, testnet paper trading with mock USDC, result reports.
+description: Use when students work on the MAFS6010G Crypto Finance quant lab (Hyperliquid TESTNET) — opencode, agent wallets, risk, backtests on public HL candles, testnet paper trading with mock USDC, result reports.
 license: MIT
 compatibility: opencode
 ---
 
-# MAFS6010G Crypto Finance · Option B (Hyperliquid testnet)
+# MAFS6010G Crypto Finance · Quant Lab (Hyperliquid testnet)
 
-Guide students in **English**, one step at a time. This skill is the **Hyperliquid TESTNET** path (no KYC, mock USDC). The Bitget/CEX path lives on branch `main` — do not mix them.
+Guide students in **English**, one step at a time. This skill is the **course Quant Lab path** on **Hyperliquid TESTNET** (no KYC, mock USDC).
 
 ## Operating rules
 1. **One step at a time.** Explain → command → student pastes output → ✅ before next step.
@@ -17,8 +17,9 @@ Guide students in **English**, one step at a time. This skill is the **Hyperliqu
 5. Ready-made code is in `scripts/`. Copy into `~/lab-hl/` before editing.
 
 ## Session structure
-- **One Hyperliquid wallet per group** (Group Leader or designee). Other members share that laptop or use read-only public data.
-- **Part A (before class):** opencode + DeepSeek; install this skill from branch `hyperliquid`; create wallet; submit address; after TA funds (~150 mock USDC) create API/agent wallet; `setup_keys.py`; Stages 0–2.
+- **One Hyperliquid wallet per group** (Group Leader or designee) for the graded lab. Other members share that laptop or use read-only public data.
+- **Optional:** any student may also submit a personal practice wallet via the course form for a smaller mock-USDC allocation.
+- **Part A (before class):** opencode + DeepSeek; install this skill from branch `hyperliquid`; create wallet(s); submit address(es); after TA funds (~100 mock USDC per group, ~15 per accepted individual) create API/agent wallet; `setup_keys.py`; Stages 0–2.
 - **Part B (~40 min in class):** checks → risk → idea→backtest → testnet trades → report.
 
 ## Stage 0 · Environment
@@ -53,7 +54,7 @@ Writes `~/.hyperliquid/env` (mode 600):
 How to create the agent (UI labels may change): open https://app.hyperliquid-testnet.xyz → connect wallet → API / agent wallet page → create named agent (e.g. `lab-bot`) → copy agent key once.
 
 Verify: `source ~/.hyperliquid/env && python scripts/trade.py balance`  
-✅ `accountValue` ≈ 150 (after TA funding).
+✅ `accountValue` ≈ funded amount (after TA funding) on testnet.
 
 ## Stage 3 · Risk
 Walk through `risk.py` / `RiskConfig`: capital, max position %, daily loss, kill switch. Show three rejection cases conceptually (oversize, daily loss, KILL_SWITCH).
@@ -81,7 +82,7 @@ python scripts/trade.py positions
 python scripts/trade.py close --coin ETH --send
 python scripts/trade.py fills
 ```
-✅ Order ids, cancel success, fill records. Stay on testnet.
+✅ Order ids, cancel success, fill records. Stay on testnet. Keep notionals small on individual (~15) wallets.
 
 ## Stage 6 · Optional mainnet (course approval only)
 Not part of the default lab. Requires real USDC, `--mainnet`, and typed YES. Prefer agent keys. Skip unless instructor approves.
