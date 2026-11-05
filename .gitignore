@@ -1,0 +1,22 @@
+# secrets
+.env
+*.env
+env
+env.live
+.bitget/
+*.key
+*.pem
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+# lab outputs (may contain real account/order data)
+data/
+outputs/
+report.html
+equity*.png
+REPORT_*.md
+KILL_SWITCH
+*.log
+.DS_Store
