@@ -1,213 +1,101 @@
 #!/usr/bin/env python3
-"""Exchange API Key interactive terminal wizard (TUI).
-Never print secrets to the screen or logs; write ~/.bitget/env (Demo) or ~/.bitget/env.live (Live), chmod 600.
-Usage: python scripts/setup_keys.py
+"""Hyperliquid key wizard: store master address + API/agent private key.
+Writes ~/.hyperliquid/env (mode 600). Never prints the agent key.
 """
 from __future__ import annotations
-import getpass, os, shutil, subprocess, sys
+import getpass, os, re, sys
 
 HOME = os.path.expanduser("~")
-DIR = os.path.join(HOME, ".bitget")
-DEMO_ENV = os.path.join(DIR, "env")
-LIVE_ENV = os.path.join(DIR, "env.live")
+DIR = os.path.join(HOME, ".hyperliquid")
+ENV = os.path.join(DIR, "env")
 
-def say(msg=""):
-    print(msg)
+def say(msg=""): print(msg)
 
 def ask(prompt, default=None):
     suf = f" [{default}]" if default is not None else ""
     s = input(f"{prompt}{suf}: ").strip()
     return s if s else default
 
-def ask_choice(prompt, choices):
-    """choices: list of (key, label). Returns key."""
-    say(f"\n{prompt}")
-    for k, label in choices:
-        say(f"  {k}) {label}")
-    while True:
-        c = input("Enter option number: ").strip()
-        if any(c == k for k, _ in choices):
-            return c
-        say("Invalid option, try again.")
+def valid_addr(a: str) -> bool:
+    return bool(re.fullmatch(r"0x[0-9a-fA-F]{40}", a or ""))
 
-def write_env(path, key, secret, passphrase):
+def write_env(address: str, agent_key: str, network: str = "testnet"):
+    if not agent_key.startswith("0x"):
+        agent_key = "0x" + agent_key
     os.makedirs(DIR, exist_ok=True)
-    # Do not write secrets to any other temp file; write the target file directly
     body = (
-        f"export BITGET_API_KEY={key}\n"
-        f"export BITGET_SECRET_KEY={secret}\n"
-        f"export BITGET_PASSPHRASE={passphrase}\n"
+        f"export HL_ACCOUNT_ADDRESS={address}\n"
+        f"export HL_AGENT_KEY={agent_key}\n"
+        f"export HL_NETWORK={network}\n"
     )
-    with open(path, "w", encoding="utf-8") as f:
+    with open(ENV, "w", encoding="utf-8") as f:
         f.write(body)
-    os.chmod(path, 0o600)
-    say(f"✅ Saved to {path} (mode 600). Secrets are not shown in the output above.")
+    os.chmod(ENV, 0o600)
+    say(f"✅ Saved to {ENV} (mode 600). Agent key is not shown above.")
 
-def collect_keys():
-    say("\nPaste in this terminal (Secret / Passphrase input is hidden):")
-    say("⚠️ Do not paste Keys into chat or share them with anyone.")
-    key = input("API Key: ").strip()
-    secret = getpass.getpass("Secret: ").strip()
-    passphrase = getpass.getpass("Passphrase: ").strip()
-    if not key or not secret or not passphrase:
-        say("❌ Key / Secret / Passphrase cannot be empty.")
-        return None
-    return key, secret, passphrase
+def guide():
+    say("\n" + "=" * 60)
+    say("Create an API / agent wallet on Hyperliquid TESTNET")
+    say("=" * 60)
+    say("""
+1. Open https://app.hyperliquid-testnet.xyz and connect the group wallet
+   (MetaMask / Rabby). Use TESTNET — the URL must contain 'testnet'.
+2. Confirm the group has mock USDC (TAs fund ~150 per group).
+3. Open the API / agent wallet page (often linked from the account menu
+   as "API" — exact label can change; look for "API wallet" / "Agent").
+4. Create a named API wallet (e.g. lab-bot). Copy:
+     - Your MASTER address (the connected wallet)
+     - The AGENT private key shown once (this key can TRADE but NOT withdraw)
+5. Never paste the seed phrase or master private key into chat or into
+   opencode. Only the agent key goes into this wizard.
+""")
 
-def guide_create(demo=True):
-    kind = "Demo (paper)" if demo else "Live"
-    say("\n" + "=" * 56)
-    say(f"[No Key yet] Follow these steps to create a {kind} API Key")
-    say("=" * 56)
-    steps = [
-        "1. Open https://www.bitget.com in a browser and log into the course account.",
-        "2. Go to: Profile → API Management (or Account → API).",
-    ]
-    if demo:
-        steps += [
-            "3. Switch to the Demo Trading page first (button labels follow the live UI).",
-            "4. Create an API Key while in the Demo environment.",
-            "5. Permissions: check Read + Trade only; ⚠️ never check Withdraw.",
-            "6. For futures, also enable futures read/write; spot-only can skip futures.",
-            "7. Copy Key / Secret / Passphrase carefully (Secret is shown only once).",
-            "8. If Demo balance is 0: claim/activate demo funds on the Demo Trading page.",
-        ]
-    else:
-        steps += [
-            "3. Confirm you are in the Live environment (not still on Demo Trading).",
-            "4. Create an API Key; permissions Read + Trade only; ⚠️ never Withdraw.",
-            "5. Bind an IP allowlist (public IP: curl ifconfig.me).",
-            "6. For futures, enable futures read/write.",
-            "7. Copy Key / Secret / Passphrase carefully.",
-            "8. Classroom live trading uses the TA-funded group sub-account — do not touch large main-account balances.",
-        ]
-    for s in steps:
-        say(s)
-    say("\nWhen finished, return to this terminal.")
-    input("Press Enter to continue to paste & save…")
-
-def verify(path, paper=True):
-    say("\n[Verify] About to run a read-only query (no orders).")
-    if not shutil.which("bgc"):
-        say("⚠️ bgc not found on PATH. Finish Stage 1 (install Agent Hub) first.")
-        say("After install, verify manually:")
-        if paper:
-            say(f"  source {path} && bgc --paper-trading account_overview")
-        else:
-            say(f"  source {path} && bgc --read-only account_overview")
-        return False
-    # source via bash so secrets are not placed on argv
-    if paper:
-        cmd = f'source "{path}" && bgc --paper-trading account_overview'
-    else:
-        cmd = f'source "{path}" && bgc --read-only account_overview'
-    say(f"$ {cmd.replace(os.path.expanduser('~'), '~')}")
+def verify_readonly(address: str, agent_key: str, network: str):
     try:
-        r = subprocess.run(["bash", "-lc", cmd], capture_output=True, text=True, timeout=60)
+        from eth_account import Account
+        from hyperliquid.info import Info
+        from hyperliquid.utils import constants
+        if not agent_key.startswith("0x"):
+            agent_key = "0x" + agent_key
+        agent = Account.from_key(agent_key)
+        base = constants.TESTNET_API_URL if network != "mainnet" else constants.MAINNET_API_URL
+        info = Info(base, skip_ws=True)
+        st = info.user_state(address)
+        av = (st.get("marginSummary") or {}).get("accountValue")
+        say(f"Read-only check: network={network} master={address}")
+        say(f"  agent_address={agent.address}")
+        say(f"  accountValue={av}")
+        say("✅ Keys parse and account is reachable (trading not tested here).")
     except Exception as e:
-        say(f"⚠️ Verify call failed: {e}")
-        return False
-    out = (r.stdout or "") + (r.stderr or "")
-    # Do not print full env; show a bgc output preview only
-    preview = out.strip()
-    if len(preview) > 1200:
-        preview = preview[:1200] + "\n…(truncated)"
-    say(preview or "(no output)")
-    ok = r.returncode == 0 and ("accountEquity" in out or "available" in out or "USDT" in out or '"code"' in out)
-    if r.returncode != 0:
-        say(f"⚠️ bgc exit code {r.returncode}. See SKILL.md troubleshooting (balance 0 / invalid Key / Demo-Live mix-up).")
-        return False
-    if ok:
-        say("✅ Read-only verify looks successful.")
-    else:
-        say("⚠️ Command ran, but output does not look like an account overview. Please check manually.")
-    return ok
-
-def next_steps():
-    say("\n" + "=" * 56)
-    say("Next steps (from Stage 3)")
-    say("=" * 56)
-    say("1. Risk: python scripts/risk.py 100")
-    say("2. Fetch data / backtest: see SKILL.md Stage 4")
-    say("3. After backtest, result page: python scripts/backtest.py ... --html report.html")
-    say("4. Before paper trading: source ~/.bitget/env && bgc --paper-trading account_overview")
-    say("Good luck with the Lab!\n")
+        say(f"⚠️ Verify failed: {type(e).__name__}: {e}")
+        say("Keys were still saved; fix network / funding and retry trade.py balance.")
 
 def main():
-    say("=" * 56)
-    say(" MAFS6010G Crypto Quant Lab · API Key setup wizard")
-    say("=" * 56)
-    say("This wizard only reads/writes ~/.bitget/ on this machine. Secrets are not sent to the network (except verify: bgc calling the exchange API).")
-
-    choice = ask_choice(
-        "Where are you now?",
-        [
-            ("1", "I already have an API Key — save it locally"),
-            ("2", "I don't have a Key — guide me to create one (Demo paper)"),
-            ("3", "I don't have a Key — guide me to create one (Live)"),
-            ("4", "Demo paper Key only (save existing or create into ~/.bitget/env)"),
-            ("5", "Exit"),
-        ],
-    )
-    if choice == "5":
-        say("Exited."); return 0
-
-    paper = True
-    path = DEMO_ENV
-    if choice == "1":
-        which = ask_choice(
-            "Which kind of Key is this?",
-            [("1", "Demo paper → save to ~/.bitget/env"),
-             ("2", "Live → save to ~/.bitget/env.live")],
-        )
-        paper = which == "1"
-        path = DEMO_ENV if paper else LIVE_ENV
-    elif choice == "2":
-        guide_create(demo=True)
-        paper, path = True, DEMO_ENV
-    elif choice == "3":
-        guide_create(demo=False)
-        paper, path = False, LIVE_ENV
-    elif choice == "4":
-        has = ask_choice(
-            "Is the Demo Key already created?",
-            [("1", "Yes — paste and save now"),
-             ("2", "Not yet — show create guide first")],
-        )
-        if has == "2":
-            guide_create(demo=True)
-        paper, path = True, DEMO_ENV
-
-    if os.path.exists(path):
-        ov = ask_choice(
-            f"{path} already exists. Overwrite?",
-            [("1", "Overwrite"), ("2", "Cancel — leave existing file")],
-        )
-        if ov == "2":
-            say("Cancelled."); return 0
-
-    keys = collect_keys()
-    if not keys:
-        return 1
-    key, secret, passphrase = keys
-    write_env(path, key, secret, passphrase)
-    # Drop local references ASAP (best effort)
-    del key, secret, passphrase, keys
-
-    do_v = ask_choice("Run read-only verify now?", [("1", "Yes"), ("2", "Later")])
-    if do_v == "1":
-        verify(path, paper=paper)
-    else:
-        if paper:
-            say(f"Later run: source {path} && bgc --paper-trading account_overview")
-        else:
-            say(f"Later run: source {path} && bgc --read-only account_overview")
-
-    next_steps()
-    return 0
+    say("MAFS6010G · Hyperliquid key setup (Option B / testnet)")
+    say("Agent keys can trade but cannot withdraw. Never share seed phrases.")
+    c = ask("Choose: 1=I have master address + agent key  2=Show create guide first  3=Quit", "1")
+    if c == "3":
+        return
+    if c == "2":
+        guide()
+        input("Press Enter when ready to paste keys…")
+    network = ask("Network (testnet/mainnet)", "testnet").lower()
+    if network not in ("testnet", "mainnet"):
+        say("Invalid network"); return
+    if network == "mainnet":
+        say("⚠️ Mainnet is optional and subject to course approval.")
+    address = ask("Master wallet address (0x…)")
+    if not valid_addr(address):
+        say("❌ Address must be 0x + 40 hex chars"); return
+    say("Paste agent private key (hidden):")
+    agent_key = getpass.getpass("HL_AGENT_KEY: ").strip()
+    if len(agent_key) < 64:
+        say("❌ Agent key looks too short"); return
+    write_env(address, agent_key, network)
+    if ask("Run read-only verify now? (y/n)", "y").lower().startswith("y"):
+        verify_readonly(address, agent_key, network)
+    say("\nNext: source ~/.hyperliquid/env && python trade.py balance")
+    say("Restart opencode after setup so it can use the env file path (not the secret).")
 
 if __name__ == "__main__":
-    try:
-        sys.exit(main())
-    except KeyboardInterrupt:
-        say("\nInterrupted."); sys.exit(130)
+    main()

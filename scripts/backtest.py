@@ -1,11 +1,9 @@
 """Generic backtest engine: multi-symbol, spot/futures (optional funding), fees, risk, train/test split, equity PNG, optional HTML report.
 Examples:
-  python backtest.py --symbols BTCUSDT --granularity 1h --start 2025-11-01 --strategy ma_cross --params '{"fast":10,"slow":30}'
-  python backtest.py --symbols BTCUSDT,ETHUSDT,SOLUSDT --granularity 4h --start 2025-01-01 --strategy momentum --params '{"lookback":42}'
-  python backtest.py --symbols BTCUSDT --market futures --granularity 1h --start 2026-08-10 --strategy funding --funding
-  python backtest.py ... --split 0.7     # first 70% train (tune), last 30% out-of-sample
-  python backtest.py ... --split 0.7 --html report.html   # single-file result page
-Data is fetched by data.py and cached under ./data."""
+  python backtest.py --symbols ETH --granularity 1h --start 2026-04-01 --strategy rsi --params '{"n":14,"lo":30,"hi":70}' --split 0.7 --html report.html
+  python backtest.py --symbols BTC,ETH --granularity 4h --start 2025-11-01 --strategy ma_cross --params '{"fast":10,"slow":30}'
+  python backtest.py --symbols ETH --funding --strategy funding --split 0.7
+Data: Hyperliquid mainnet public candles via data.py (≤5000 bars/interval)."""
 import argparse, json, math
 import numpy as np, pandas as pd
 from data import fetch_candles, funding_history
@@ -78,10 +76,10 @@ def metrics(curve, trades, bpy, bench):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--symbols", default="BTCUSDT"); ap.add_argument("--market", default="spot", choices=["spot", "futures"])
+    ap.add_argument("--symbols", default="ETH"); ap.add_argument("--market", default="futures", choices=["spot", "futures"])
     ap.add_argument("--granularity", default="1h"); ap.add_argument("--start", default=None); ap.add_argument("--end")
     ap.add_argument("--strategy", default="ma_cross"); ap.add_argument("--params", default="{}")
-    ap.add_argument("--fee", type=float, default=0.001, help="one-way fee, default 0.1%% (futures taker ~0.06%%; override as needed)")
+    ap.add_argument("--fee", type=float, default=0.00035, help="one-way fee; HL base taker ~0.035%% (override as needed)")
     ap.add_argument("--funding", action="store_true", help="include funding for futures")
     ap.add_argument("--split", type=float, default=None, help="train fraction, e.g. 0.7")
     ap.add_argument("--capital", type=float, default=100.0); ap.add_argument("--out", default="equity.png")

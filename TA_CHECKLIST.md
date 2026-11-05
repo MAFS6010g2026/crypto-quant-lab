@@ -1,18 +1,19 @@
-# TA pre-class checklist
-Verified (2026-11-03, macOS/zsh/Node 24/opencode 1.19.5): installer, bgc read-only account_overview, order dry-run, DeepSeek-V4-Flash in opencode, skills loaded from ~/.claude/skills; Demo Key + `bgc --paper-trading` balance (50000 USDT) and spot market order (filled).
-Known failures — do not use: cloud OAuth MCP (dynamic client registration error), bgc authorize_start (422), Claude Code /mcp OAuth (token expired).
-- [ ] Tell students in advance to prepare a DeepSeek API Key (or use free big-pickle)
-- [ ] Confirm everyone knows Keys must be written via `read` into ~/.bitget/env — never pasted into chat
-- [ ] Remind: Demo funds must be claimed on the Demo Trading page (else balance is 0); futures Keys must include futures R/W (else 40014)
-- [ ] Optional: warm data cache before class: `python scripts/data.py candles BTCUSDT --granularity 1h --start 2025-11-01`, distribute ./data to reduce classroom network load
-- [ ] Run one paper place / query / cancel: `python scripts/trade.py buy --usdt 10 --send` / `status`; confirm account_overview fields (and trade.py detail/fills/cancel)
-- [ ] Configure bitget MCP in opencode.json; confirm tools list (and `{env:VAR}` substitution)
-- [ ] Confirm opencode reads skills from ~/.claude/skills and can see this skill
-- [ ] Classroom network can reach api.bitget.com (have a proxy plan ready)
-- [ ] Python env and matplotlib installed
-- [ ] Live: collect one ERC20 USDT deposit address per group (form + deadline), send 100 USDT each on ERC20, confirm arrival; groups' Live Keys Read+Trade only (no Withdraw) with IP bind; record each group's UID
-- [ ] Confirm each group has ONE Bitget account (Group Leader) holding Demo + Live keys; other members need only opencode + DeepSeek + skill
-- [ ] Announce Part A (before class) homework + pre-class checklist; in class ~40 min agenda
-- [ ] Decide whether to allow futures (spot-only recommended)
-- [ ] After class: groups flatten, cancel opens, delete Keys; follow course policy for remaining funds
-- [ ] Distribution: copy `crypto-quant-lab/` into `~/.claude/skills/` or project `.opencode/skills/` (directory name must be crypto-quant-lab)
+# TA checklist — Option B (Hyperliquid testnet)
+
+## One-time TA wallet
+1. Use a dedicated wallet. Deposit **≥ 5 USDC** on Hyperliquid **mainnet** (Arbitrum USDC → official Bridge2 `0x2Df1c51E09aECF9cacB7bc98cB1742757f163dF7`). Below 5 USDC is lost.
+2. On testnet, claim drip: `POST https://api.hyperliquid-testnet.xyz/info` body `{"type":"claimDrip","user":"<TA_ADDRESS>"}` (or the testnet drip UI). Expect ~1000 mock USDC once eligibility is met.
+3. Keep the TA master key offline. Prefer an **API/agent** key for automated `usd_transfer` scripts.
+
+## Per session / per class
+1. Collect group wallet addresses (Google Form). Deadline example: Fri 6 Nov 23:59 HKT.
+2. Fund each group with **~150 mock USDC** on **testnet** via `usd_transfer`.
+   - Testnet transfer fee is about **1 USDC** → send **≥ 2** so the group receives ≥ 1; for ~150 received, send **~151**.
+3. Groups create an API/agent wallet on https://app.hyperliquid-testnet.xyz and run `setup_keys.py` on one laptop.
+4. In class (~40 min): risk → backtest (mainnet public candles) → testnet trades → report.
+5. Optional mainnet live trading only with course / instructor approval.
+
+## Verified on TA sandbox (2026-11-05)
+- claimDrip API works after mainnet deposit.
+- Fresh address can trade after receiving `usd_transfer` (no faucet needed).
+- Agent wallet can place/cancel; cannot withdraw.

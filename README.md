@@ -1,87 +1,71 @@
-# crypto-quant-lab — MAFS6010G Crypto Finance Quant Lab
+# MAFS6010G Crypto Quant Lab — Option B (Hyperliquid testnet)
 
-An [opencode](https://opencode.ai) skill that acts as your lab TA for the **MAFS6010G Crypto Finance** Quant Lab. It guides each group step by step through:
+English-only course skill for **MAFS6010G Crypto Finance**.  
+This branch (`hyperliquid`) uses **Hyperliquid TESTNET**: no KYC for students, mock USDC, API/agent wallets.
 
-**idea → strategy → risk controls → backtest → paper trading → small live trade (group budget) → result report**
+> Bitget / CEX path remains on branch `main`. Do not mix the two.
 
-The lab trades through the Bitget exchange API (via the `bgc` CLI). Use a DeepSeek model in opencode.
-
-**Accounts:** each group needs only **ONE Bitget account** (registered by the Group Leader or one designated member). It holds the group's 100 USDT, the Demo API key and the Live API key. Other members do not need Bitget accounts. Every student installs opencode + a DeepSeek key + this skill, or the group works on the key holder's machine. Keys stay on that one machine — never share keys in chat.
+**Repo:** https://github.com/MAFS6010g2026/crypto-quant-lab/tree/hyperliquid
 
 ## Install with opencode (recommended)
 
-1. Install [opencode](https://opencode.ai/docs/) and connect a DeepSeek model (`/connect` → DeepSeek).
-2. Start `opencode` in your home folder and paste the prompt below. The agent installs everything; **you** then run the key wizard yourself.
+After `opencode` works with DeepSeek, paste this whole prompt:
 
-```text
-Please install the MAFS6010G Crypto Quant Lab for me. Work step by step, show each command before running it, and stop to ask me if anything fails.
+```
+You are installing the MAFS6010G Crypto Quant Lab skill (Option B / Hyperliquid testnet).
 
-SAFETY RULES (follow strictly):
-- Never ask me for, read, print, or handle any API key, secret, or passphrase. Do not open ~/.bitget/ files.
-- Do not use sudo or install system packages without asking me first.
-- Do not place any orders or run trading commands.
+Do the following, then print a checklist table (OK / FAIL):
+1) Ensure git and python3 (>=3.9) exist.
+2) Clone or update the skill on the hyperliquid branch:
+   mkdir -p ~/.claude/skills
+   if [ -d ~/.claude/skills/crypto-quant-lab-hl/.git ]; then
+     git -C ~/.claude/skills/crypto-quant-lab-hl fetch origin && git -C ~/.claude/skills/crypto-quant-lab-hl checkout hyperliquid && git -C ~/.claude/skills/crypto-quant-lab-hl pull
+   else
+     git clone -b hyperliquid https://github.com/MAFS6010g2026/crypto-quant-lab.git ~/.claude/skills/crypto-quant-lab-hl
+   fi
+3) mkdir -p ~/lab-hl && cp -R ~/.claude/skills/crypto-quant-lab-hl/{scripts,templates} ~/lab-hl/
+4) python3 -m venv ~/lab-hl/.venv && source ~/lab-hl/.venv/bin/activate
+   pip install -U pip
+   pip install hyperliquid-python-sdk eth-account numpy pandas matplotlib
+5) Quick checks (public data only — no keys):
+   cd ~/lab-hl && source .venv/bin/activate
+   python scripts/data.py candles ETH --granularity 1h --start 2026-09-01 | tail -5
+6) NEVER ask for seed phrases, master private keys, or agent keys. Tell the student to run
+   `python scripts/setup_keys.py` themselves in their own terminal after the TAs fund the group.
 
-STEPS:
-1. Check tools: run `git --version`, `python3 --version` (need >= 3.9; on Windows try `python`), `node -v` (need >= 20), `npm -v`. If one is missing, tell me how to install it and wait.
-2. Get the skill: if ~/.claude/skills/crypto-quant-lab already exists and is a git repo, run `git -C ~/.claude/skills/crypto-quant-lab pull`; otherwise run
-   `mkdir -p ~/.claude/skills && git clone https://github.com/MAFS6010g2026/crypto-quant-lab.git ~/.claude/skills/crypto-quant-lab`
-   (On Windows use WSL, or the same path under %USERPROFILE%\.claude\skills\crypto-quant-lab.)
-   If the network times out, ask me whether to set a proxy (e.g. export https_proxy=http://127.0.0.1:<port>).
-3. Lab folder: `mkdir -p ~/lab && cp -R ~/.claude/skills/crypto-quant-lab/scripts ~/.claude/skills/crypto-quant-lab/templates ~/lab/` (do not overwrite files I have edited in ~/lab without asking).
-4. Python env: `cd ~/lab && python3 -m venv .venv`, then install with the venv's pip: `.venv/bin/pip install numpy pandas matplotlib` (Windows: `.venv\Scripts\pip`).
-5. Exchange CLI: `npx -y @bitget-ai/bitget-agent-installer upgrade-all --target all`, then `bgc --version` (if not found, add `$(npm prefix -g)/bin` to PATH for this session).
-6. Verify: `cd ~/lab && .venv/bin/python scripts/backtest.py --help` and `.venv/bin/python scripts/risk.py 100`. Confirm ~/.claude/skills/crypto-quant-lab/SKILL.md exists.
-7. Finish with a short summary table (tool, version, OK/FAIL), then tell me:
-   (a) to run the key wizard MYSELF in a normal terminal (not in this chat): `cd ~/lab && source .venv/bin/activate && python scripts/setup_keys.py`
-   (b) to quit and restart opencode so the crypto-quant-lab skill is loaded.
+Print versions and pass/fail for each step. Stop after the checklist.
 ```
 
-After it finishes: run `python scripts/setup_keys.py` in your own terminal (never paste keys into opencode), then restart opencode.
-
-## Manual install (fallback)
+Manual fallback:
 
 ```bash
-# 1. Install the skill (opencode reads ~/.claude/skills/<name>/SKILL.md)
-git clone https://github.com/MAFS6010g2026/crypto-quant-lab.git ~/.claude/skills/crypto-quant-lab
-# update later
-cd ~/.claude/skills/crypto-quant-lab && git pull
-
-# 2. Lab working folder + Python deps (Python >= 3.9)
-mkdir -p ~/lab && cp -R ~/.claude/skills/crypto-quant-lab/{scripts,templates} ~/lab/ && cd ~/lab
-python3 -m venv .venv && source .venv/bin/activate
-pip install pandas matplotlib
-
-# 3. Store your API key locally (hidden input, never printed)
-python scripts/setup_keys.py
+git clone -b hyperliquid https://github.com/MAFS6010g2026/crypto-quant-lab.git ~/.claude/skills/crypto-quant-lab-hl
+mkdir -p ~/lab-hl && cp -R ~/.claude/skills/crypto-quant-lab-hl/{scripts,templates} ~/lab-hl/
+cd ~/lab-hl && python3 -m venv .venv && source .venv/bin/activate
+pip install hyperliquid-python-sdk eth-account numpy pandas matplotlib
 ```
-
-Then start `opencode` in `~/lab` and say: *"Use the crypto-quant-lab skill and guide our group through the lab from Stage 0."*
-
-## Contents
-
-| Path | Purpose |
-|---|---|
-| `SKILL.md` | Stage-by-stage instructions the agent follows |
-| `TA_CHECKLIST.md` | TA preparation checklist |
-| `scripts/setup_keys.py` | API key wizard (writes `~/.bitget/env` / `env.live`, mode 600) |
-| `scripts/data.py`, `strategies.py`, `backtest.py` | Data layer, strategy templates, backtest engine (fee 0.1%) |
-| `scripts/risk.py` | Risk rules (sizing, caps, kill switch) |
-| `scripts/trade.py` | Risk-gated paper/live orders (dry-run by default) |
-| `scripts/report_html.py` | Single-file HTML result page |
-| `templates/` | Report template and example output |
-
-## Tutorial
-
-Full step-by-step guide (before-class setup, ERC20 deposit address, 40-minute in-class plan): **MAFS6010G_Crypto_Quant_Lab_Tutorial.pdf**, available in the course Canvas *Files → Lab* folder.
 
 ## Safety
 
-- API keys: **Read + Trade only — never enable Withdraw.** Use an IP allowlist for live keys.
-- **Never commit or paste keys** (API key, secret, passphrase) into git, chat, or opencode. Keys live only in `~/.bitget/env*` (outside this repo).
-- Paper trading and `--dry-run` by default; live orders need explicit confirmation and must stay within the group budget.
-- Educational material only — not investment advice.
+- **Never** give your seed phrase or master private key to an AI / chat / email.
+- Store only the **API/agent** key in `~/.hyperliquid/env` (mode 600). Agents can trade, **cannot withdraw**.
+- Default network is **testnet**. Mainnet needs `--mainnet` and typed `YES`.
+- `trade.py` defaults to dry-run; `--send` still requires typing `YES`.
+- Per-order notional hard cap (default 25 USDC). Create `KILL_SWITCH` to freeze sends.
 
-## Contacts (TAs)
+## Scripts
 
-- Henry — tamafs6010g@ust.hk
-- WeiTao — mafsta3@ust.hk
+| Script | Role |
+|---|---|
+| `setup_keys.py` | Save master address + agent key |
+| `data.py` | Mainnet public candles / funding (≤5000 bars) |
+| `strategies.py` | Strategy templates |
+| `risk.py` | Risk config |
+| `backtest.py` | Backtest + equity PNG + HTML report |
+| `report_html.py` | Single-file result page |
+| `trade.py` | Testnet orders via agent wallet |
+
+## Contacts
+
+- Henry: tamafs6010g@ust.hk
+- WeiTao: mafsta3@ust.hk
