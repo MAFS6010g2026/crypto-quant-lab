@@ -23,17 +23,13 @@ Equity curve: ![](equity.png)
 | Time | Side | Size | Fill price | Order ID | Risk result |
 |---|---|---|---|---|---|
 
-## 4. Live trading (optional)
-| Time | Side | Size | Fill price | Fee | Order ID |
-|---|---|---|---|---|---|
+## 4. Backtest vs testnet paper
+| Metric | Backtest | Testnet paper |
+|---|---|---|
+| Fill / slippage | | |
+| Fees | | |
 
-## 5. Backtest vs paper vs live
-| Metric | Backtest | Paper | Live |
-|---|---|---|---|
-| Fill / slippage | | | |
-| Fees | | | |
-
-## 6. Conclusions & reflection (students write this)
+## 5. Conclusions & reflection (students write this)
 - Did the strategy work? Overfit?
 - Which risk rules fired?
-- If you ran this for real, what would you change?
+- What would you change before any real-fund experiment (outside this lab)?

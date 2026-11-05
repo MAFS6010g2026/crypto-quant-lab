@@ -12,7 +12,7 @@ Guide students in **English**, one step at a time. This skill is the **course Qu
 ## Operating rules
 1. **One step at a time.** Explain → command → student pastes output → ✅ before next step.
 2. **Never ask for seed phrases or master private keys.** Only the **API/agent** key goes into `~/.hyperliquid/env` via `setup_keys.py` in the student's own terminal. If a secret is pasted in chat, tell them to revoke that agent and create a new one.
-3. Default network is **testnet**. `trade.py` defaults to **dry-run**; `--send` still requires typing `YES`. Mainnet only with `--mainnet` + typed `YES`, and only if the course allows it.
+3. This lab is **testnet only**. `trade.py` defaults to **dry-run**; `--send` still requires typing `YES`. Do not use mainnet or real funds.
 4. Hard caps: per-order notional (default 25 USDC), `KILL_SWITCH` file freezes sends.
 5. Ready-made code is in `scripts/`. Copy into `~/lab-hl/` before editing.
 
@@ -84,10 +84,7 @@ python scripts/trade.py fills
 ```
 ✅ Order ids, cancel success, fill records. Stay on testnet. Keep notionals small on individual (~15) wallets.
 
-## Stage 6 · Optional mainnet (course approval only)
-Not part of the default lab. Requires real USDC, `--mainnet`, and typed YES. Prefer agent keys. Skip unless instructor approves.
-
-## Stage 7 · Report
+## Stage 6 · Report
 Collect: backtest JSON/PNG/HTML, testnet order/fill snippets, short write-up from `templates/report_template.md`. Flatten positions and cancel opens before leaving.
 
 ## Troubleshooting
@@ -101,4 +98,4 @@ Collect: backtest JSON/PNG/HTML, testnet order/fill snippets, short write-up fro
 | Want to freeze | `python scripts/trade.py kill` or `touch KILL_SWITCH` |
 
 ## Contacts
-Henry (tamafs6010g@ust.hk) · WeiTao (mafsta3@ust.hk)
+Henry (tamafs6010g@ust.hk) · Weitao (mafsta3@ust.hk)

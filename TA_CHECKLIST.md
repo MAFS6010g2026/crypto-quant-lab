@@ -15,7 +15,6 @@
    - Keep a small TA demo reserve (~20).
 3. Groups (and individuals) create an API/agent wallet on https://app.hyperliquid-testnet.xyz and run `setup_keys.py` on one laptop.
 4. In class (~40 min): risk → backtest (mainnet public candles) → testnet trades → report.
-5. Optional mainnet live trading only with course / instructor approval.
 
 ## Verified on TA sandbox (2026-11-05)
 - claimDrip API works after mainnet deposit; cannot re-faucet the same address.

@@ -50,7 +50,7 @@ pip install hyperliquid-python-sdk eth-account numpy pandas matplotlib
 
 - **Never** give your seed phrase or master private key to an AI / chat / email.
 - Store only the **API/agent** key in `~/.hyperliquid/env` (mode 600). Agents can trade, **cannot withdraw**.
-- Default network is **testnet**. Mainnet needs `--mainnet` and typed `YES`.
+- This lab is **testnet only** (mock USDC). Do not trade real funds on mainnet.
 - `trade.py` defaults to dry-run; `--send` still requires typing `YES`.
 - Per-order notional hard cap (default 25 USDC). Create `KILL_SWITCH` to freeze sends.
 
@@ -69,4 +69,4 @@ pip install hyperliquid-python-sdk eth-account numpy pandas matplotlib
 ## Contacts
 
 - Henry: tamafs6010g@ust.hk
-- WeiTao: mafsta3@ust.hk
+- Weitao: mafsta3@ust.hk

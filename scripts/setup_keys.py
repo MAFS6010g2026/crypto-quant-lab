@@ -83,7 +83,7 @@ def main():
     if network not in ("testnet", "mainnet"):
         say("Invalid network"); return
     if network == "mainnet":
-        say("⚠️ Mainnet is optional and subject to course approval.")
+        say("⚠️ This course lab is testnet-only. Prefer testnet; mainnet uses real funds.")
     address = ask("Master wallet address (0x…)")
     if not valid_addr(address):
         say("❌ Address must be 0x + 40 hex chars"); return
